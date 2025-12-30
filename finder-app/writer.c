@@ -46,18 +46,22 @@ int main(int argc, char *argv[])
 	ssize_t nr;
 	ssize_t count = strlen(writestr);
 		
-	syslog(LOG_DEBUG, "Writing %s to %s", writestr, count);
-
-	while (count !=0 && (nr = write(fd, writestr, count) !=0))
+	syslog(LOG_DEBUG, "Writing %s to %s", writestr, writefile);
+	
+	// Now we loop to keep track of number of bytes written
+	// when all bytes are written, count will be 0
+	// we offset buffer by nr when nr bytes have been written
+	// if errno shows EINTR (syscall interrupt), we loop until the process resumes
+	while (count > 0 && (nr = write(fd, writestr, count)) != 0)
 	{
 		if (nr == -1)
 		{	
 			if (errno == EINTR) continue;
 
 			syslog(LOG_ERR, "Writing failed: %s", strerror(errno));
-			closefd();
+			close(fd);
 			closelog();
-			break;
+			return 1;
 		}
 		count -= nr;
 		writestr += nr;
