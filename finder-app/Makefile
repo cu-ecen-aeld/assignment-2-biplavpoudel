@@ -1,13 +1,13 @@
-ifeq($(CROSS_COMPILE),)
-	CC ?=gcc
+ifeq ($(CROSS_COMPILE),)
+CC ?=gcc
 else
-	CC = $(CROSS_COMPILE)gcc
+CC = $(CROSS_COMPILE)gcc
 endif
 
 CFLAGS = -Wall -Wextra -O2
 TARGET = writer
 SRCS = writer.c
-OBJS = $(SRCS:.c=.o)    # using substituiton reference
+OBJS = $(SRCS:.c=.o)
 
 # our default target is "writer"
 all: $(TARGET)
